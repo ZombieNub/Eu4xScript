@@ -141,7 +141,7 @@ def file_search_modify_scale(filename, directory, output_directory, scale_input)
                     modified_line = re.sub(number_regex,
                                            str(float(input_line_regex_test_result.group(2)) * float(scale_input)),
                                            input_file_lines[i])
-                except:
+                except: # Bare excepts are a bad idea, but this is here to know where the program found an error.
                     print(input_filename + "," + str(i) + "," + input_file_lines[i] + "," + str(
                         input_line_regex_test_result.group(2)))
                     raise
