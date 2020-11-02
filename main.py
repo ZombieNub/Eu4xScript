@@ -108,7 +108,7 @@ def name_converter(filename: str, scale: int) -> str:
 
 
 def file_search_modify_scale(filename, directory, output_directory, scale_input):
-    input_filename: str = filename  # Grab the input filename from the input
+    input_filename = filename  # Grab the input filename from the input
     input_file = open(os.path.join(directory, input_filename), 'rt')  # Grab the input file itself and open it
     # Note: Grabs from the directory for source
     # Helpful: https://docs.python.org/3/tutorial/inputoutput.html#tut-files
@@ -142,6 +142,7 @@ def file_search_modify_scale(filename, directory, output_directory, scale_input)
                                            str(float(input_line_regex_test_result.group(2)) * float(scale_input)),
                                            input_file_lines[i])
                 except: # Bare excepts are a bad idea, but this is here to know where the program found an error.
+                    # Besides, this stops the program anyway, so it doesn't matter.
                     print(input_filename + "," + str(i) + "," + input_file_lines[i] + "," + str(
                         input_line_regex_test_result.group(2)))
                     raise
