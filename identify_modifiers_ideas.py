@@ -27,6 +27,9 @@ import re
 from collections import Counter
 from typing import TextIO
 
+# Current up to date Regex: (It works, but it's stupidly large
+# (?<!ai_will_do|modifier\s*=\s*{\n\s*factor\s*=\s*[0-9.-]+\n\s*(?:[a-zA-Z_0-9=. -]+\n\s*)*)(?<=(?:{\n\s*(?:\s*#[\s\w\(\)]+)?)|(?:\s*[a-zA-Z_]+\s*=\s*[0-9.-]+\s*(?:\s*#[\s\w\(\)]+\n\s*)?))(?<=\s*)(?!factor|province_id)([a-zA-Z_]+)\s*=\s*([0-9.-]+)
+
 
 def regex_find_modifiers_and_apply_scale(file, scale=10):
     """
