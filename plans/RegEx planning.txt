@@ -1,0 +1,20 @@
+Needs to match:
+cavalry_power = 0.10 (cavalry_power, 0.10)
+cavalry_cost = -0.10 (cavalry_cost, -0.10)
+mil_tech_cost_modifier  = -0.1 (mil_tech_cost_modifier, -0.1)
+global_autonomy = -0.025 (global_autonomy, -0.025)
+yearly_absolutism = 0.5 (yearly_absolutism, 0.5)
+
+Context and notes for match:
+Every scalable modifier has a name and a number, which can either be positive or negative. Note that being positive or
+negative doesn't necessarily mean said modifier is good or bad to have.
+All modifiers appear as such:
+idea_name = {
+    modifier_name = number
+}
+
+Needs to not match:
+government = tribal
+factor = 0.45
+num_of_cities = 20
+vassal = 2

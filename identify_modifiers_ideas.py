@@ -25,20 +25,27 @@ import os
 from pathlib import Path
 import re
 from collections import Counter
-from typing import TextIO
+from typing import TextIO, IO
+
 
 # Current up to date Regex: (It works, but it's stupidly large
 # (?<!ai_will_do|modifier\s*=\s*{\n\s*factor\s*=\s*[0-9.-]+\n\s*(?:[a-zA-Z_0-9=. -]+\n\s*)*)(?<=(?:{\n\s*(?:\s*#[\s\w\(\)]+)?)|(?:\s*[a-zA-Z_]+\s*=\s*[0-9.-]+\s*(?:\s*#[\s\w\(\)]+\n\s*)?))(?<=\s*)(?!factor|province_id)([a-zA-Z_]+)\s*=\s*([0-9.-]+)
+# I don't know why and I don't want to know why but Python's implementation of RegEx doesn't support repetition in the
+# lookbehinds. Looks like I'll have to get more creative with my RegEx now. Keeping the old RegEx for later reference.
+# This may requires some planning.
 
 
-def regex_find_modifiers_and_apply_scale(file, scale=10):
+def regex_find_modifiers_and_apply_scale(file: str, scale: float = 10) -> IO:
     """
-    Finds every modifier in the file, and stores it in an array.
-    :param file: Input file where EU4 ideas are stored.
+    Finds every modifier in the file, and stores it in an array. Note: Currently doesn't work, this only describes
+    the intended implementation.
+    :param file: Input file where EU4 ideas are stored. (Must include directory)
     :param scale: Number that every modifier is multiplied by. Defaults to 10.
-    :return : New output file where the modifiers found have been multiplied by scale
+    :return IO: New output file where the modifiers found have been multiplied by scale
     """
     print("Hello!")  # Test function to get the errors to shut up for a bit
+    input_file = open(Path(file), 'rt')  # Get the input file and put it into input_file, accounting for OS differences
+    return input_file  # Return the file
 
 
 if __name__ == '__main__':
@@ -46,4 +53,9 @@ if __name__ == '__main__':
     If run directly, returns a list of all modifiers found in a file, including line number.
     Of course right now it doesn't do that since I haven't written it yet.
     """
-    print("Hello!")  # Test function
+    # print("Hello!")  # Test function
+    test_file = regex_find_modifiers_and_apply_scale(
+        'testing/00_basic_ideas.txt')  # Grab a test file and put it into the function
+    for i in test_file.readlines():
+        print(i, end="")  # Read the output of the function to make sure it works.
+    test_file.close()
