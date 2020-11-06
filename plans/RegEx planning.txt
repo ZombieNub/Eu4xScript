@@ -18,3 +18,35 @@ government = tribal
 factor = 0.45
 num_of_cities = 20
 vassal = 2
+
+Context and notes for not match:
+Certain modifiers that adjust AI behavior should not be scaled, as this can result in unusual AI behavior.
+Additionally, conditions that block off or are required for things to happen must also be discounted.
+
+RegEx proposal:
+To simplify things, at least on the RegEx, I could use multiple RegExs, one for gathering possible modifiers, and then
+another RegEx to filter out what I don't want to modify. Because this will likely make things more complicated overall,
+I may choose to avoid this option.
+The string must begin with the modifier name, then the " = ", then the {\n. Because of certain typing errors in the
+ideas files, there may be multiple spaces between the equal signs. While EU4 can account for this, we must account for
+this in the RegEx.
+Note: The tab has been included, for good measure.
+    *[a-zA-Z_]+ *= *{\n
+Next, we must include the whitespace before the modifier, the modifier itself, the additional " = ", and the modifier
+number. Finding the number must account for possible negative integers.
+Note: Capture groups will be used to store the modifier name and number.
+Note 2: The capture group only captures the last instance of the +, so for now, the capture group will be a non-capture
+group.
+Note 3: Because ideas sometimes contains multiple modifiers, the match for the modifiers will include a +.
+Note 4: Yes/No modifiers can appear alongside numbered modifiers, so a check will have to be put in place for
+this.
+Note 5: An extra \s* was included because SOMEBODY ON THE DEV TEAM CANT BE BOTHERED TO CLEAN UP EXTRA WHITESPACE
+(?:\s*[a-zA-Z_]+ *= *(?:[0-9.-]|(?:(?:yes)|(?:no)))+\s*\n)+
+Finally, we must include the whitespace before the closing bracket, then the closing bracket itself.
+\s*}
+Combined:
+	*[a-zA-Z_]+ *= *{\n(?:\s*[a-zA-Z_]+ *= *(?:[0-9.-]|(?:(?:yes)|(?:no)))+\s*\n)+\s*}
+With all of this, the only included extra conditions/modifiers are ai_will_do, and factor. This can be taken care of
+using either a lookbehind filer (pain) or a second RegEx (unprofessional). Professionalism is all about torture, so we
+shall try the lookbehind filter first.
+A non-looping lookbehind will not work, I will have to use a second RegEx

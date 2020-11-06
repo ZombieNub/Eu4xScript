@@ -43,6 +43,8 @@ def regex_find_modifiers_and_apply_scale(file: str, scale: float = 10) -> IO:
     :param scale: Number that every modifier is multiplied by. Defaults to 10.
     :return IO: New output file where the modifiers found have been multiplied by scale
     """
+    modifier_regex = re.compile("	*[a-zA-Z_]+ *= *{\n(?:\s*[a-zA-Z_]+ *= *(?:[0-9.-]|(?:(?:yes)|(?:no)))+\s*\n)+\s*}")
+
     print("Hello!")  # Test function to get the errors to shut up for a bit
     input_file = open(Path(file), 'rt')  # Get the input file and put it into input_file, accounting for OS differences
     return input_file  # Return the file
