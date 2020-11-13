@@ -11,6 +11,7 @@ down on the amount of words in the filter list.
 Notes
 I plan on relegating this script only to files in the common/ideas folder, but if the rest of the Eu4 modifiers carry
 the same structure, I will expand this script to those as well.
+Due to restructuring, this file will be used for all possible files that can be modified.
 Turns out python's RegEx (re) has a lot of helpful functions that I will find very useful, like re.findall and
 re.finditer
 In reforming the RegEx, I need to achieve a few things
@@ -34,20 +35,27 @@ from typing import TextIO, IO
 # lookbehinds. Looks like I'll have to get more creative with my RegEx now. Keeping the old RegEx for later reference.
 # This may requires some planning.
 
-
-def regex_find_modifiers_and_apply_scale(file: str, scale: float = 10) -> IO:
+class IdentifyModifiers:
     """
-    Finds every modifier in the file, and stores it in an array. Note: Currently doesn't work, this only describes
-    the intended implementation.
-    :param file: Input file where EU4 ideas are stored. (Must include directory)
-    :param scale: Number that every modifier is multiplied by. Defaults to 10.
-    :return IO: New output file where the modifiers found have been multiplied by scale
+    Broad class for changing modifiers
     """
-    modifier_regex = re.compile("	*[a-zA-Z_]+ *= *{\n(?:\s*[a-zA-Z_]+ *= *(?:[0-9.-]|(?:(?:yes)|(?:no)))+\s*\n)+\s*}")
+    def __init__(self):
+        modifier_regex = re.compile(
+            r"	*[a-zA-Z_]+ *= *{\n(?:\s*[a-zA-Z_]+ *= *(?:[0-9.-]|(?:(?:yes)|(?:no)))+\s*\n)+\s*}")
 
-    print("Hello!")  # Test function to get the errors to shut up for a bit
-    input_file = open(Path(file), 'rt')  # Get the input file and put it into input_file, accounting for OS differences
-    return input_file  # Return the file
+    def modify_ideas(file: str, scale: float = 10) -> IO:
+        """
+        Finds every modifier in the file, and stores it in an array. Note: Currently doesn't work, this only describes
+        the intended implementation.
+        :param file: Input file where EU4 ideas are stored. (Must include directory)
+        :param scale: Number that every modifier is multiplied by. Defaults to 10.
+        :return IO: New output file where the modifiers found have been multiplied by scale
+        """
+
+        print("Hello!")  # Test function to get the errors to shut up for a bit
+        input_file = open(Path(file),
+                          'rt')  # Get the input file and put it into input_file, accounting for OS differences
+        return input_file  # Return the file
 
 
 if __name__ == '__main__':
@@ -56,7 +64,7 @@ if __name__ == '__main__':
     Of course right now it doesn't do that since I haven't written it yet.
     """
     # print("Hello!")  # Test function
-    test_file = regex_find_modifiers_and_apply_scale(
+    test_file = IdentifyModifiers.modify_ideas(
         'testing/00_basic_ideas.txt')  # Grab a test file and put it into the function
     for i in test_file.readlines():
         print(i, end="")  # Read the output of the function to make sure it works.
