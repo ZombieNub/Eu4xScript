@@ -40,7 +40,7 @@ def string_to_dict_set(string: str, starting: int = 0) -> [Dict, int]:
     c = starting  # This, along with the later starting = c + 1 limits the search index so the dictionary is never
     # stuck in an infinite loop.
     while c < len(string):
-        test = string[max(0, c - 5):min(c + 5, len(string))]  # Used in debugging function to more easily
+        # test = string[max(0, c - 5):min(c + 5, len(string))]  # Used in debugging function to more easily
         # see what letter c is referring to.
         if string[c] == "}":  # If we have reached the end of a category of modifiers, etc.
             return [temp_dict, c]  # Used to send the temp_dict back up the recursion function
