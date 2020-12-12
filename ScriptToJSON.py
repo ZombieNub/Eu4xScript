@@ -64,10 +64,20 @@ def string_to_dict_set(string: str, starting: int = 0) -> [Dict, int]:
     return [temp_dict, c]  # Necessary to avoid returning a NoneType
 
 
-if __name__ == '__main__':
-    with open(Path(sys.argv[1]), 'rt') as input_file:
+def conv_file_read(file: str):
+    """
+    Convenient file reading and conversion function to simplify later code.
+
+    :param file: Input file
+    :return: Nested dict
+    """
+    with open(Path(file), 'rt') as input_file:
         input_file_contents = input_file.read()
-    converted_file = string_to_dict_set(clean_file(input_file_contents))[0]
+    return string_to_dict_set(clean_file(input_file_contents))[0]
+
+
+if __name__ == '__main__':
+    converted_file = conv_file_read(sys.argv[1])
     if os.path.exists("data.json"):
         os.remove("data.json")
     with open('data.json', 'w', encoding='utf-8') as f:
