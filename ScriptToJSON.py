@@ -1,57 +1,74 @@
+"""
+Hosts functions designed to easily convert a Clausewitz Engine script file to JSON.
+"""
+
 import json
+import os
 import sys
 import re
 from pathlib import Path
+from typing import Dict
 
-space_cleaning_regex = re.compile(' ')
-equals_regex = re.compile('=')
-opening_bracket_regex = re.compile('{')
-closing_bracket_regex = re.compile('}')
 modifier_content_regex = re.compile(r'([a-zA-Z0-9._]+)')
 modifier_name_regex = re.compile(r'([a-zA-Z_]+)')
 
 
-def clean_file(string):
+def clean_file(string: str) -> str:
+    """
+    Cleans up the string's contents to make parsing the string faster without eliminating functionality.
+
+    :param string: String
+    :return: String
+    """
     return_string = re.sub(re.compile('#.*$', flags=re.MULTILINE), '', string)  # Clears out all comments
     return_string = re.sub(re.compile(' ', flags=re.MULTILINE), '', return_string)  # Replaces all unnecessary spaces
     return_string = re.sub(re.compile('\n+', flags=re.MULTILINE), ' ', return_string)  # Removes new lines
     return re.sub(re.compile('[\t]', flags=re.MULTILINE), '', return_string)  # Removes all tabs
 
 
-def string_to_array_set(string, starting=0):
+def string_to_dict_set(string: str, starting: int = 0) -> [Dict, int]:
+    """
+    Converts cleaned string to nested dict. clean_file recommended.
+
+    :param string: String
+    :param starting: Search starting point. Not meant to be assigned outside of this function.
+    :return: Nested dict
+    """
+
     temp_dict = {}  # Blank dictionary for the nested flow control to affect
 
     c = starting  # This, along with the later starting = c + 1 limits the search index so the dictionary is never
     # stuck in an infinite loop.
     while c < len(string):
-        test = string[max(0, c - 5):min(c + 5, len(string))] # Used in Pycharm's debugging function to more easily see what letter c is referring to.
-        if string[c] == "}":
-            return [temp_dict, c]
-        if string[c] == "=":
-            if string[c + 1] == "{":
-                modifier_name = re.search(modifier_name_regex, string[starting:c]).group(1)
-                modifier_content = string_to_array_set(string, c + 2)
-                temp_dict[modifier_name] = modifier_content[0]
-                c = modifier_content[1]
-            else:
-                modifier_name = re.search(modifier_name_regex, string[starting:c]).group(1)
-                modifier_content = re.search(modifier_content_regex, string[c:]).group(1)
-                temp_dict[modifier_name] = modifier_content
-                c += len(modifier_content)
-            starting = c + 1
-        c += 1
+        test = string[max(0, c - 5):min(c + 5, len(string))]  # Used in debugging function to more easily
+        # see what letter c is referring to.
+        if string[c] == "}":  # If we have reached the end of a category of modifiers, etc.
+            return [temp_dict, c]  # Used to send the temp_dict back up the recursion function
+        if string[c] == "=":  # If a new modifier or category has been found
+            if string[c + 1] == "{":  # If we have found a category
+                modifier_name = re.search(modifier_name_regex, string[starting:c]).group(1)  # Find the category name
+                modifier_content = string_to_dict_set(string, c + 2)  # Find the category contents using recursion
+                temp_dict[modifier_name] = modifier_content[0]  # Add the category and contents to temp_dict
+                c = modifier_content[1]  # Skip c past the combined category name and contents to avoid repetition
+            else:  # If we have found a modifier
+                modifier_name = re.search(modifier_name_regex, string[starting:c]).group(1)  # Find the modifier name
+                modifier_content = re.search(modifier_content_regex, string[c:]).group(1)  # Find the modifier contents
+                try:
+                    temp_dict[modifier_name] = float(modifier_content)  # If the value is a number convert it to a float
+                except ValueError:
+                    temp_dict[modifier_name] = modifier_content  # Else, keep it as a string
+                c += len(modifier_content)  # Skip c past the modifier contents to avoid repetition
+            starting = c + 1  # Advance starting to avoid repetition
+        c += 1  # Advance the while loop
 
-    return temp_dict
+    return [temp_dict, c]  # Necessary to avoid returning a NoneType
 
 
 if __name__ == '__main__':
-    modifier_regex = re.compile('^\t*([a-zA-Z_]+) *= *([a-zA-Z_0-9.-]+)$', flags=re.MULTILINE)
     with open(Path(sys.argv[1]), 'rt') as input_file:
         input_file_contents = input_file.read()
-        converted_file = string_to_array_set(clean_file(input_file_contents))
-        print(converted_file)
-        json_data = json.dumps(converted_file)
-        print(json_data)
-        print(clean_file(input_file_contents))
-        with open('data.json', 'w', encoding='utf-8') as f:
-            json.dump(json_data, f, ensure_ascii=False, indent=4)
+    converted_file = string_to_dict_set(clean_file(input_file_contents))[0]
+    if os.path.exists("data.json"):
+        os.remove("data.json")
+    with open('data.json', 'w', encoding='utf-8') as f:
+        json.dump(converted_file, f, indent=4, ensure_ascii=False)
