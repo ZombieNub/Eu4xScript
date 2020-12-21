@@ -5,6 +5,7 @@ I'm only happy that due to ScriptToJSON.py I no longer have to do such much RegE
 """
 import json
 import os
+import re
 import sys
 from typing import Dict
 
@@ -30,9 +31,11 @@ class ScaleModifiers:
         :return: Modified nested dict
         """
         temp_dict = {}
+        number_tag_regex = re.compile(r'[0-9-]+_')
         for k, v in modifiers_dict.items():
-            if k == "trigger" or k == "ai_will_do":  # Skip over conditionals and AI modifiers to prevent either from
-                # breaking
+            k_shaved = re.sub(number_tag_regex, '', k)
+            if k_shaved == "trigger" or k_shaved == "ai_will_do":  # Skip over conditionals and AI modifiers to prevent
+                # either from breaking
                 temp_dict[k] = v
             elif isinstance(v, dict):  # Loops through nested dictionaries using recursion
                 temp_dict[k] = ScaleModifiers.modify_ideas(v, scale)
@@ -49,7 +52,6 @@ class ScaleModifiers:
 if __name__ == '__main__':
     converted_file = ScriptToJSON.conv_file_read(sys.argv[1])
     new_dict = ScaleModifiers.modify_ideas(converted_file, 10)
-    new_dict = ScaleModifiers.modify_ideas(new_dict, 0.1)
     if os.path.exists("dataScaled.json"):
         os.remove("dataScaled.json")
     with open('dataScaled.json', 'w', encoding='utf-8') as f:
